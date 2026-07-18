@@ -591,17 +591,29 @@
             <p class="eyebrow">The envelope opens</p>
             <h2 id="letter-title">For the best part of my year</h2>
             <p>
-              I love you. This last year with you has been one of the best surprises of my life,
-              not because every day was loud or perfect, but because even the ordinary days started
-              feeling like something I wanted to keep.
+              Before meeting you, I would have considered my life pretty dull. There were no
+              colors, no bright lights, and nobody to bring me joy and let me be who I am. You
+              came into my life and changed it all. You gave my world a much-needed change. The
+              grass went from a depressing gray to a fresh, new, bright green; my clouds turned
+              into rays of sunshine; my flowers had the beautiful colors they once lost. The last
+              year with you has been incredible. You gave me the love I thought I could never have
+              because of who I was. You showed me I can be a better me and let my true colors
+              shine through. Even with our recent issues, my love is still just as strong as it
+              always was and is continuing to get stronger as the days go on. Everything from your
+              laugh to those pretty eyes, your soothing voice, your amazing energy, your relaxing,
+              silly vibe, your gorgeous face, all of your body, and most importantly, your heart
+              of gold: I love it all. I can never picture you not being by my side, and I hope I
+              never will have to. I make plenty of mistakes, but at the end of the day, everybody
+              does, and it only makes who we are better and stronger. I love how you're super kind,
+              caring, patient, and understanding with me and to me. I love you to the moon and far
+              beyond, and I cannot wait for the future. You are everything I could ever ask for,
+              and you bring the much-needed spark in my life. Thank you for always being there and
+              always being yourself.
             </p>
             <p>
-              I love the way you make me laugh, the way you make simple moments feel like home,
-              and the way being with you makes the future feel exciting instead of far away.
-            </p>
-            <p>
-              You are thoughtful, beautiful, funny, brave, and so easy to adore. Thank you for an
-              amazing year. I am so lucky I get to be us with you.
+              I was hoping I could do more with the whole puzzle/escape room theme and idea, but
+              my mind kept blanking and my creativity soon ran dry. I hope you'll still appreciate
+              and like this.
             </p>
           </section>
         </section>
@@ -692,15 +704,52 @@
 
       const slideshowIntroSeconds = 15;
       const slideshowIntroMessage = "These are some of my favorite moments of us together. There are tons and tons more that I could add, but then I'd be here forever. Everything from our chemistry, to our silliness, to just the pure joy in your voice and laughter. I love it all. Thanks for being you.";
-      const clipSources = [
-        "./clips/moment-01.mp4",
-        "./clips/moment-02.mp4",
-        "./clips/moment-03.mp4",
-        "./clips/moment-04.mp4",
-        "./clips/moment-05.mp4",
-        "./clips/moment-06.mp4",
-        "./clips/moment-07.mp4",
-        "./clips/moment-08.mp4"
+      const clipGroups = [
+        ["./clips/hq/moment-01-01.mp4"],
+        [
+          "./clips/hq/moment-02-00.mp4",
+          "./clips/hq/moment-02-01.mp4",
+          "./clips/hq/moment-02-02.mp4"
+        ],
+        [
+          "./clips/hq/moment-03-00.mp4",
+          "./clips/hq/moment-03-01.mp4",
+          "./clips/hq/moment-03-02.mp4"
+        ],
+        [
+          "./clips/hq/moment-04-00.mp4",
+          "./clips/hq/moment-04-01.mp4",
+          "./clips/hq/moment-04-02.mp4",
+          "./clips/hq/moment-04-03.mp4",
+          "./clips/hq/moment-04-04.mp4",
+          "./clips/hq/moment-04-05.mp4",
+          "./clips/hq/moment-04-06.mp4"
+        ],
+        [
+          "./clips/hq/moment-05-00.mp4",
+          "./clips/hq/moment-05-01.mp4",
+          "./clips/hq/moment-05-02.mp4",
+          "./clips/hq/moment-05-03.mp4"
+        ],
+        [
+          "./clips/hq/moment-06-00.mp4",
+          "./clips/hq/moment-06-01.mp4"
+        ],
+        [
+          "./clips/hq/moment-07-00.mp4",
+          "./clips/hq/moment-07-01.mp4",
+          "./clips/hq/moment-07-02.mp4",
+          "./clips/hq/moment-07-03.mp4",
+          "./clips/hq/moment-07-04.mp4"
+        ],
+        [
+          "./clips/hq/moment-08-00.mp4",
+          "./clips/hq/moment-08-01.mp4",
+          "./clips/hq/moment-08-02.mp4",
+          "./clips/hq/moment-08-03.mp4",
+          "./clips/hq/moment-08-04.mp4",
+          "./clips/hq/moment-08-05.mp4"
+        ]
       ];
 
       const state = {
@@ -710,7 +759,8 @@
         hintOpen: false,
         slideshowCountdown: slideshowIntroSeconds,
         slideIndex: 0,
-        orderedClips: shuffleClips(clipSources)
+        clipPartIndex: 0,
+        orderedClips: shuffleClipGroups(clipGroups)
       };
 
       const introPanel = document.querySelector("#intro-panel");
@@ -746,8 +796,8 @@
         return answer.toLowerCase().replace(/[^a-z0-9]/g, "");
       }
 
-      function shuffleClips(clips) {
-        const shuffled = [...clips];
+      function shuffleClipGroups(groups) {
+        const shuffled = groups.map((group) => [...group]);
 
         for (let index = shuffled.length - 1; index > 0; index -= 1) {
           const randomIndex = Math.floor(Math.random() * (index + 1));
@@ -804,7 +854,8 @@
       }
 
       function renderSlideshow() {
-        const activeClip = state.orderedClips[state.slideIndex] || state.orderedClips[0];
+        const activeGroup = state.orderedClips[state.slideIndex] || state.orderedClips[0] || [];
+        const activeClip = activeGroup[state.clipPartIndex] || activeGroup[0] || "";
 
         clipSource.src = activeClip;
         clipVideo.load();
@@ -834,7 +885,8 @@
         window.clearInterval(countdownTimer);
         state.slideshowCountdown = slideshowIntroSeconds;
         state.slideIndex = 0;
-        state.orderedClips = shuffleClips(clipSources);
+        state.clipPartIndex = 0;
+        state.orderedClips = shuffleClipGroups(clipGroups);
         slideshowMessage.textContent = slideshowIntroMessage;
         countdownPill.textContent = `The clips begin in ${state.slideshowCountdown}...`;
         lockCard.classList.add("hidden");
@@ -911,6 +963,7 @@
 
       previousClipButton.addEventListener("click", () => {
         state.slideIndex = Math.max(state.slideIndex - 1, 0);
+        state.clipPartIndex = 0;
         renderSlideshow();
       });
 
@@ -921,7 +974,17 @@
         }
 
         state.slideIndex += 1;
+        state.clipPartIndex = 0;
         renderSlideshow();
+      });
+
+      clipVideo.addEventListener("ended", () => {
+        const activeGroup = state.orderedClips[state.slideIndex] || [];
+
+        if (state.clipPartIndex < activeGroup.length - 1) {
+          state.clipPartIndex += 1;
+          renderSlideshow();
+        }
       });
 
       renderKeys();
