@@ -80,8 +80,7 @@
       .intro-panel,
       .game-board,
       .inventory-panel,
-      .letter-panel,
-      .path-panel {
+      .letter-panel {
         border: 1px solid rgba(255, 248, 235, 0.42);
         border-radius: 8px;
         box-shadow: 0 24px 80px var(--shadow);
@@ -218,61 +217,6 @@
         border: 1px solid #e4c9a6;
         border-radius: 8px;
         background: #fffdf6;
-      }
-
-      .path-panel {
-        display: grid;
-        gap: 18px;
-        padding: 24px;
-        background: #fffdf6;
-      }
-
-      .path-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .path-key {
-        min-height: 84px;
-        display: grid;
-        gap: 6px;
-        align-content: center;
-        border: 1px solid #d8b98f;
-        border-radius: 8px;
-        color: var(--ink);
-        background: #fffaf0;
-      }
-
-      .path-key:hover,
-      .path-key:focus-visible {
-        border-color: var(--gold);
-        outline: 3px solid rgba(198, 138, 53, 0.28);
-      }
-
-      .path-key:disabled {
-        opacity: 1;
-      }
-
-      .path-key span {
-        color: var(--rose-deep);
-        font-size: 0.82rem;
-        font-weight: 800;
-      }
-
-      .path-key strong {
-        color: var(--teal-deep);
-        font-size: 1.2rem;
-      }
-
-      .path-key-done {
-        border-color: rgba(31, 98, 95, 0.45);
-        background: #e5f0e7;
-      }
-
-      .path-key-next {
-        border-color: var(--gold);
-        box-shadow: inset 0 0 0 2px rgba(198, 138, 53, 0.28);
       }
 
       .lock-status {
@@ -479,7 +423,7 @@
         <p class="eyebrow">A small lockbox is waiting</p>
         <h1 id="intro-title">For my lovely, adventurous girlfriend.</h1>
         <p class="intro-copy">
-          Six little locks, one tiny final puzzle, and one envelope at the end.
+          Six little locks. Three love notes, three inside jokes, and one envelope at the end.
         </p>
         <button class="primary-action" type="button" id="begin-button">Begin</button>
       </section>
@@ -516,20 +460,6 @@
             <button class="primary-action inline-action hidden" type="button" id="next-button">Next lock</button>
             <button class="primary-action inline-action hidden" type="button" id="letter-button">Open the envelope</button>
           </form>
-
-          <section class="path-panel hidden" id="path-panel" aria-labelledby="path-title">
-            <p class="eyebrow">One more little puzzle</p>
-            <h2 id="path-title">Trace the key trail</h2>
-            <p class="clue-text">
-              The keys are scattered on the table. Tap them in the order she found them to open
-              the envelope.
-            </p>
-            <div class="path-grid" id="path-grid"></div>
-            <p class="hint-text" id="path-message">Tap the keys from the first lock to the last lock.</p>
-            <button class="primary-action inline-action hidden" type="button" id="path-open-button">
-              Open the envelope
-            </button>
-          </section>
 
           <section class="letter-panel hidden" id="letter-panel" aria-labelledby="letter-title">
             <p class="eyebrow">The envelope opens</p>
@@ -634,15 +564,11 @@
         }
       ];
 
-      const keyPathOrder = [2, 5, 0, 4, 1, 3];
-
       const state = {
         currentStep: 0,
         inputs: puzzleSteps.map(() => ""),
         unlocked: puzzleSteps.map(() => false),
-        hintOpen: false,
-        pathIndex: 0,
-        pathMessage: "Tap the keys from the first lock to the last lock."
+        hintOpen: false
       };
 
       const introPanel = document.querySelector("#intro-panel");
@@ -660,10 +586,6 @@
       const feedbackText = document.querySelector("#feedback-text");
       const nextButton = document.querySelector("#next-button");
       const letterButton = document.querySelector("#letter-button");
-      const pathPanel = document.querySelector("#path-panel");
-      const pathGrid = document.querySelector("#path-grid");
-      const pathMessage = document.querySelector("#path-message");
-      const pathOpenButton = document.querySelector("#path-open-button");
       const letterPanel = document.querySelector("#letter-panel");
       const keyGrid = document.querySelector("#key-grid");
 
@@ -692,57 +614,6 @@
         });
       }
 
-      function pathComplete() {
-        return state.pathIndex === puzzleSteps.length;
-      }
-
-      function renderPath() {
-        pathGrid.innerHTML = "";
-        keyPathOrder.forEach((puzzleIndex) => {
-          const step = puzzleSteps[puzzleIndex];
-          const isDone = puzzleIndex < state.pathIndex;
-          const isNext = puzzleIndex === state.pathIndex && !pathComplete();
-          const keyButton = document.createElement("button");
-          keyButton.className = [
-            "path-key",
-            isDone ? "path-key-done" : "",
-            isNext ? "path-key-next" : ""
-          ].filter(Boolean).join(" ");
-          keyButton.type = "button";
-          keyButton.disabled = isDone || pathComplete();
-
-          const label = document.createElement("span");
-          label.textContent = step.label;
-
-          const token = document.createElement("strong");
-          token.textContent = step.token;
-
-          keyButton.append(label, token);
-          keyButton.addEventListener("click", () => {
-            if (pathComplete()) {
-              return;
-            }
-
-            if (puzzleIndex === state.pathIndex) {
-              state.pathIndex += 1;
-              state.pathMessage = pathComplete()
-                ? "The trail is complete. The envelope is ready."
-                : "Good. Keep following the keys.";
-            } else {
-              state.pathMessage = "Not that one yet. Follow the locks from first to last.";
-            }
-
-            renderPath();
-          });
-
-          pathGrid.append(keyButton);
-        });
-
-        pathMessage.textContent = state.pathMessage;
-        pathMessage.className = pathComplete() ? "success-text" : "hint-text";
-        pathOpenButton.classList.toggle("hidden", !pathComplete());
-      }
-
       function setFeedback(message, success) {
         feedbackText.textContent = message;
         feedbackText.className = success ? "success-text" : "miss-text";
@@ -753,8 +624,6 @@
         const currentUnlocked = state.unlocked[state.currentStep];
         const allSolved = solvedCount() === puzzleSteps.length;
 
-        lockCard.classList.toggle("hidden", allSolved);
-        pathPanel.classList.toggle("hidden", !allSolved);
         lockLabel.textContent = step.label;
         progressLabel.textContent = `${solvedCount()} of ${puzzleSteps.length} keys found`;
         lockTitle.textContent = step.title;
@@ -768,9 +637,6 @@
         nextButton.classList.toggle("hidden", !currentUnlocked || state.currentStep >= puzzleSteps.length - 1);
         letterButton.classList.toggle("hidden", !allSolved);
         renderKeys();
-        if (allSolved) {
-          renderPath();
-        }
       }
 
       document.querySelector("#begin-button").addEventListener("click", () => {
@@ -818,11 +684,6 @@
 
       letterButton.addEventListener("click", () => {
         lockCard.classList.add("hidden");
-        letterPanel.classList.remove("hidden");
-      });
-
-      pathOpenButton.addEventListener("click", () => {
-        pathPanel.classList.add("hidden");
         letterPanel.classList.remove("hidden");
       });
 
