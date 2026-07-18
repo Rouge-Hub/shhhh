@@ -994,29 +994,23 @@
     <source src="background.mp3" type="audio/mpeg">
 </audio>
 
-<button id="musicButton" type="button">♫ Play Music</button>
-
 <script>
     const backgroundMusic = document.getElementById("backgroundMusic");
-    const musicButton = document.getElementById("musicButton");
 
-    // 0.10 = 10% volume
+    // 20% volume
     backgroundMusic.volume = 0.20;
 
-    musicButton.addEventListener("click", async () => {
-        if (backgroundMusic.paused) {
-            try {
-                await backgroundMusic.play();
-                musicButton.textContent = "♫ Pause Music";
-            } catch (error) {
-                console.error("Music could not play:", error);
-            }
-        } else {
-            backgroundMusic.pause();
-            musicButton.textContent = "♫ Play Music";
-        }
-    });
-</script>
+    function startMusic() {
+        backgroundMusic.play().catch(error => {
+            console.error("Music could not play:", error);
+        });
 
+        document.removeEventListener("click", startMusic);
+        document.removeEventListener("keydown", startMusic);
+    }
+
+    document.addEventListener("click", startMusic);
+    document.addEventListener("keydown", startMusic);
+</script>
 </body>
 </html>
