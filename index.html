@@ -988,6 +988,35 @@
       });
 
       renderKeys();
-    </script>
-  </body>
+</script>
+
+<audio id="backgroundMusic" loop>
+    <source src="background.mp3" type="audio/mpeg">
+</audio>
+
+<button id="musicButton" type="button">♫ Play Music</button>
+
+<script>
+    const backgroundMusic = document.getElementById("backgroundMusic");
+    const musicButton = document.getElementById("musicButton");
+
+    // 0.10 = 10% volume
+    backgroundMusic.volume = 0.10;
+
+    musicButton.addEventListener("click", async () => {
+        if (backgroundMusic.paused) {
+            try {
+                await backgroundMusic.play();
+                musicButton.textContent = "♫ Pause Music";
+            } catch (error) {
+                console.error("Music could not play:", error);
+            }
+        } else {
+            backgroundMusic.pause();
+            musicButton.textContent = "♫ Play Music";
+        }
+    });
+</script>
+
+</body>
 </html>
