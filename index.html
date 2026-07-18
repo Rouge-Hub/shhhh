@@ -561,7 +561,7 @@
               <p class="eyebrow">Before the envelope</p>
               <h2 id="slideshow-title">Some favorite moments</h2>
               <p class="slideshow-message" id="slideshow-message"></p>
-              <p class="countdown-pill" id="countdown-pill">The clips begin in 8...</p>
+              <p class="countdown-pill" id="countdown-pill">The clips begin in 15...</p>
             </div>
 
             <div class="clip-view hidden" id="clip-view">
@@ -574,7 +574,7 @@
               </div>
 
               <div class="clip-stage">
-                <video class="clip-video" id="clip-video" controls playsinline preload="metadata">
+                <video class="clip-video" id="clip-video" autoplay controls playsinline preload="metadata">
                   <source id="clip-source" src="" type="video/mp4" />
                   Your browser cannot play this clip.
                 </video>
@@ -690,7 +690,7 @@
         }
       ];
 
-      const slideshowIntroSeconds = 8;
+      const slideshowIntroSeconds = 15;
       const slideshowIntroMessage = "These are some of my favorite moments of us together. There are tons and tons more that I could add, but then I'd be here forever. Everything from our chemistry, to our silliness, to just the pure joy in your voice and laughter. I love it all. Thanks for being you.";
       const clipSources = [
         "./clips/moment-01.mp4",
@@ -808,6 +808,22 @@
 
         clipSource.src = activeClip;
         clipVideo.load();
+        const playClip = () => {
+          const playRequest = clipVideo.play();
+
+          if (playRequest) {
+            playRequest.catch(() => {
+              // The controls stay visible if a browser blocks autoplay with sound.
+            });
+          }
+        };
+
+        if (clipVideo.readyState >= 2) {
+          playClip();
+        } else {
+          clipVideo.addEventListener("loadeddata", playClip, { once: true });
+        }
+
         slideCounter.textContent = `${state.slideIndex + 1} of ${state.orderedClips.length}`;
         previousClipButton.disabled = state.slideIndex === 0;
         nextClipButton.textContent =
